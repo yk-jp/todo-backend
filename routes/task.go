@@ -59,3 +59,19 @@ func CreateTask(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(responseData)
 }
+
+func DeleteTask(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	response := database.Db.Db.Delete(&schema.Task{}, id)
+
+	if response.Error != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.Status(200).SendString("Successfully deleted")
+}
