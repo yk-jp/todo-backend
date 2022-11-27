@@ -13,7 +13,7 @@ func FindAllTasks(responseData *[]models.Task) *gorm.DB {
 		Scan(&responseData)
 }
 
-func FindTaskById(responseData *models.Task, id uint) *gorm.DB {
+func FindTaskById(responseData *models.Task, id int) *gorm.DB {
 	return database.Db.Db.Model(&models.Task{}).
 		Select("tasks.id, title, status_refer, statuses.name as status").
 		Joins("left join statuses on statuses.id = tasks.status_refer").

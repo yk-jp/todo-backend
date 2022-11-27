@@ -11,11 +11,6 @@ import (
 func GetTasks(c *fiber.Ctx) error {
 	responseData := []models.Task{}
 
-	// response := database.Db.Db.Model(&models.Task{}).
-	// 	Select("tasks.id, title, status_refer, statuses.name as status").
-	// 	Joins("left join statuses on statuses.id = tasks.status_refer").
-	// 	Scan(&responseData)
-
 	response := utils.FindAllTasks(&responseData)
 
 	if response.Error != nil {
@@ -33,11 +28,7 @@ func GetTask(c *fiber.Ctx) error {
 	}
 
 	var responseData models.Task
-	response := database.Db.Db.Model(&models.Task{}).
-		Select("tasks.id, title, status_refer, statuses.name as status").
-		Joins("left join statuses on statuses.id = tasks.status_refer").
-		Where("tasks.id = ?", id).
-		Scan(&responseData)
+	response := utils.FindTaskById(&responseData, id)
 
 	if response.Error != nil {
 		return fiber.ErrInternalServerError
@@ -60,11 +51,7 @@ func CreateTask(c *fiber.Ctx) error {
 	}
 
 	var responseData models.Task
-	response := database.Db.Db.Model(&models.Task{}).
-		Select("tasks.id, title, status_refer, statuses.name as status").
-		Joins("left join statuses on statuses.id = tasks.status_refer").
-		Where("tasks.id = ?", task.ID).
-		Scan(&responseData)
+	response := utils.FindTaskById(&responseData, int(task.ID))
 
 	if response.Error != nil {
 		return fiber.ErrInternalServerError
