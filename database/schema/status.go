@@ -1,4 +1,4 @@
-package models
+package schema
 
 import "database/sql/driver"
 
@@ -19,6 +19,6 @@ func (r TaskStatus) Value() (driver.Value, error) {
 }
 
 type Status struct {
-	ID   uint   `json:"id" gorm:"primaryKey,AUTO_INCREMENT"`
-	Name string `json:"name" gorm:"not null" sql:"type:task_status"`
+	ID   uint       `json:"id" gorm:"primaryKey;AUTO_INCREMENT"`
+	Name TaskStatus `json:"name" gorm:"unique;not null"`
 }
