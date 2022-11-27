@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/yk-jp/todo-backend/database"
 	"github.com/yk-jp/todo-backend/database/schema"
@@ -60,6 +62,28 @@ func CreateTask(c *fiber.Ctx) error {
 	return c.Status(200).JSON(responseData)
 }
 
+func UpdateTask(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	var updateData schema.Task
+
+	if err := c.BodyParser(&updateData); err != nil {
+		return err
+	}
+
+	response := database.Db.Db.Model(&schema.Task{}).Where("id = ?", id).Updates(updateData)
+
+	if response.Error != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.Status(200).SendString("Successfully updated")
+}
+
 func DeleteTask(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 
@@ -70,6 +94,7 @@ func DeleteTask(c *fiber.Ctx) error {
 	response := database.Db.Db.Delete(&schema.Task{}, id)
 
 	if response.Error != nil {
+		fmt.Println(response.Error)
 		return fiber.ErrInternalServerError
 	}
 
