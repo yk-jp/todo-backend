@@ -7,6 +7,21 @@ import (
 	"github.com/yk-jp/todo-backend/models"
 )
 
+func GetTasks(c *fiber.Ctx) error {
+	responseData := []models.Task{}
+
+	response := database.Db.Db.Model(&models.Task{}).
+		Select("tasks.id, title, status_refer, statuses.name as status").
+		Joins("left join statuses on statuses.id = tasks.status_refer").
+		Scan(&responseData)
+
+	if response.Error != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.Status(200).JSON(responseData)
+}
+
 func CreateTask(c *fiber.Ctx) error {
 	var task schema.Task
 
@@ -21,10 +36,14 @@ func CreateTask(c *fiber.Ctx) error {
 	}
 
 	var responseData models.Task
-	response := database.Db.Db.Model(&models.Task{}).Select("tasks.id, title, status_refer, statuses.name as status").Joins("left join statuses on statuses.id = tasks.status_refer").Where("tasks.id = ?", task.ID).Scan(&responseData)
+	response := database.Db.Db.Model(&models.Task{}).
+		Select("tasks.id, title, status_refer, statuses.name as status").
+		Joins("left join statuses on statuses.id = tasks.status_refer").
+		Where("tasks.id = ?", task.ID).
+		Scan(&responseData)
 
 	if response.Error != nil {
-		return c.Status(500).JSON("Network Error")
+		return fiber.ErrInternalServerError
 	}
 
 	return c.Status(200).JSON(responseData)

@@ -11,6 +11,7 @@ import (
 
 func setupRoute(app *fiber.App) {
 	// task
+	app.Get("/api/task", routes.GetTasks)
 	app.Post("/api/task", routes.CreateTask)
 }
 
