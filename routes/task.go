@@ -21,7 +21,7 @@ func CreateTask(c *fiber.Ctx) error {
 	}
 
 	var responseData models.Task
-	response := database.Db.Db.Model(&models.Task{}).Select("tasks.id, title, statuses.name as status").Joins("left join statuses on statuses.id = tasks.status_refer").Where("tasks.id = ?", task.ID).Scan(&responseData)
+	response := database.Db.Db.Model(&models.Task{}).Select("tasks.id, title, status_refer, statuses.name as status").Joins("left join statuses on statuses.id = tasks.status_refer").Where("tasks.id = ?", task.ID).Scan(&responseData)
 
 	if response.Error != nil {
 		return c.Status(500).JSON("Network Error")
