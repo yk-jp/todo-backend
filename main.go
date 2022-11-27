@@ -6,20 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/yk-jp/todo-backend/config"
 	"github.com/yk-jp/todo-backend/database"
+	"github.com/yk-jp/todo-backend/routes"
 )
 
-func greeting(c *fiber.Ctx) error {
-	return c.SendString("Welcome")
+func setupRoute(app *fiber.App) {
+	// task
+	app.Get("/api/task", routes.GetTasks)
+	app.Get("/api/task/:id", routes.GetTask)
+	app.Delete("/api/task/:id", routes.DeleteTask)
+	app.Put("/api/task/:id", routes.UpdateTask)
+	app.Post("/api/task", routes.CreateTask)
 }
 
 func main() {
 	app := fiber.New()
-
 	config := config.LoadEnvVariables()
-
 	database.ConnectDb(config)
-
-	app.Get("/api", greeting)
-
+	setupRoute(app)
 	log.Fatal(app.Listen(":5000"))
 }

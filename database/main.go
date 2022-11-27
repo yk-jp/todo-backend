@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/yk-jp/todo-backend/config"
-	"github.com/yk-jp/todo-backend/database/models"
+	"github.com/yk-jp/todo-backend/database/schema"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,15 +28,14 @@ func ConnectDb(config config.Config) {
 	db.Logger = logger.Default.LogMode(logger.Info)
 
 	// create enum type in postgres
-	createEnum(db)
+	createStatus(db)
 
 	log.Println("Running migrations")
-	db.AutoMigrate(&models.Task{}, &models.Status{})
+	db.AutoMigrate(&schema.Task{}, &schema.Status{})
 	Db = DBInstance{Db: db}
 }
 
-func createEnum(db *gorm.DB) {
-	// https://github.com/jackc/pgx/issues/498
-	// must be hard-coded unless variables are safely interpolated into the sql string with a proper library.
-	db.Raw("CREATE TYPE task_status AS ENUM ('pending', 'complete');")
+func createStatus(db *gorm.DB) {
+	statuses := []schema.Status{{Name: schema.Pending}, {Name: schema.Complete}}
+	db.Create(&statuses)
 }
